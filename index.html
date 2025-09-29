@@ -45,7 +45,7 @@
     </div>
   </div>
   <script>
-    // Brighter, glowing network background with full animation and error protection
+    // Continuous, interactive network background (damping removed)
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
     let w, h;
@@ -62,7 +62,7 @@
     window.addEventListener('resize', resize);
     resize();
 
-    canvas.addEventListener('mousemove', (e) => {
+    canvas.addEventListener('mousemove', e => {
       const rect = canvas.getBoundingClientRect();
       mouse.x = e.clientX - rect.left;
       mouse.y = e.clientY - rect.top;
@@ -74,18 +74,22 @@
 
     function randomNode() {
       return {
-        x: Math.random() * w, y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.6, vy: (Math.random() - 0.5) * 0.6,
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.6,
+        vy: (Math.random() - 0.5) * 0.6,
         r: Math.random() * 2.8 + 1.5,
       };
     }
-    function initNodes() { nodes = Array.from({ length: NODES }, randomNode); }
+    function initNodes() {
+      nodes = Array.from({ length: NODES }, randomNode);
+    }
     initNodes();
 
     function animate() {
       try {
         ctx.clearRect(0, 0, w, h);
-        nodes.forEach((n) => {
+        nodes.forEach(n => {
           if (mouse.x !== null && mouse.y !== null) {
             const dx = n.x - mouse.x;
             const dy = n.y - mouse.y;
@@ -96,28 +100,31 @@
               n.vy += (dy / dist) * force;
             }
           }
-          n.vx *= 0.97; n.vy *= 0.97;
-          n.x += n.vx; n.y += n.vy;
+          n.x += n.vx;
+          n.y += n.vy;
           if (n.x < 0 || n.x > w) n.vx *= -1;
           if (n.y < 0 || n.y > h) n.vy *= -1;
         });
+
         for (let i = 0; i < NODES; i++) {
           for (let j = i + 1; j < NODES; j++) {
             const a = nodes[i], b = nodes[j];
-            const dist = Math.hypot(a.x - b.x, a.y - b.y);
-            if (dist < 110) {
+            const d = Math.hypot(a.x - b.x, a.y - b.y);
+            if (d < 110) {
               ctx.save();
-              ctx.shadowColor = '#42a0ff'; ctx.shadowBlur = 6;
-              ctx.strokeStyle = '#42a0ff'; ctx.globalAlpha = 0.32; ctx.lineWidth = 1.7;
-              ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); ctx.restore();
+              ctx.shadowColor = "#42a0ff"; ctx.shadowBlur = 6;
+              ctx.strokeStyle = "#42a0ff"; ctx.globalAlpha = 0.32; ctx.lineWidth = 1.7;
+              ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+              ctx.restore();
             }
           }
         }
-        nodes.forEach((n) => {
+
+        nodes.forEach(n => {
           ctx.save();
           ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-          ctx.fillStyle = '#42a0ff'; ctx.shadowColor = '#42a0ff'; ctx.shadowBlur = 13; ctx.globalAlpha = 0.92;
-          ctx.fill(); ctx.restore();
+          ctx.fillStyle = "#42a0ff"; ctx.shadowColor = "#42a0ff"; ctx.shadowBlur = 13;
+          ctx.globalAlpha = 0.92; ctx.fill(); ctx.restore();
         });
       } catch (error) {
         console.error('Animation error:', error);
