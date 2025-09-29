@@ -18,10 +18,6 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     #preloader svg { width:48px; height:48px; animation:spin 1s linear infinite; }
 
-    /* Custom Cursor */
-    body { cursor: none; }
-    #cursor { position: fixed; top:0; left:0; width:16px; height:16px; background: rgba(66,160,255,0.8); border-radius:50%; pointer-events:none; mix-blend-mode: difference; transition: transform 0.1s ease; z-index:10000; }
-
     /* Dark Mode */
     :root { --bg: #f4f7fa; --fg: #222; --primary: #42a0ff; --accent: #ff8c42; }
     [data-theme="dark"] { --bg: #111; --fg: #ddd; --primary: #4d90fe; --accent: #fc9640; }
@@ -41,11 +37,11 @@
     .hero { position:relative; text-align:center; padding:6rem 1rem 4rem; overflow:hidden; }
     .hero::after { content:""; position:absolute; top:0; left:50%; width:200%; height:200%; background:radial-gradient(circle at center, var(--primary) 0%, transparent 70%); transform:translateX(-50%) translateY(-30%); opacity:0.15; }
     .hero h1 { font-size:2.8rem; margin-bottom:1rem; }
-    .hero p { font-size:1.125rem; margin-bottom:2rem; }
+    .hero p { font-size:1.125rem; margin-bottom:2rem; max-width:600px; margin-left:auto; margin-right:auto; }
     .hero .input-group { display:inline-flex; max-width:480px; width:100%; }
     .hero .input-group input { flex:1; padding:0.75rem 1rem; border:2px solid #ccd7e0; border-radius:4px 0 0 4px; font-size:1rem; }
     .hero .input-group button { background:var(--accent); color:#fff; padding:0 1.5rem; border-radius:0 4px 4px 0; font-weight:600; transition:background 0.2s; }
-    .hero .input-group button:hover { background: #e6771b; }
+    .hero .input-group button:hover { background:#e6771b; }
 
     /* Features */
     .features { display:grid; gap:2rem; padding:4rem 1rem; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); }
@@ -83,9 +79,6 @@
     <svg viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" stroke="#42a0ff" stroke-width="4" fill="none"/></svg>
   </div>
 
-  <!-- Custom Cursor -->
-  <div id="cursor"></div>
-
   <!-- Navigation -->
   <nav>
     <div class="logo">ZeroScan Security</div>
@@ -98,11 +91,11 @@
 
   <!-- Hero Section -->
   <section class="hero container" data-anim>
-    <h1>Secure Your Website in Minutes</h1>
-    <p>Instantly discover vulnerabilities and fix them before attackers do. No setup required.</p>
+    <h1>Professional Vulnerability Scanning</h1>
+    <p>Submit your domain and receive a detailed security report. Pricing starts at $49 per scan.</p>
     <div class="input-group">
-      <input type="text" placeholder="Enter your domain e.g. example.com">
-      <button>Scan Now</button>
+      <input type="text" placeholder="Enter your domain (e.g. example.com)">
+      <button>Request Scan</button>
     </div>
   </section>
 
@@ -138,13 +131,13 @@
       </div>
       <div class="step">
         <h2>3</h2>
-        <p>Fix vulnerabilities</p>
+        <p>Receive your report</p>
       </div>
     </div>
   </section>
 
   <!-- Sticky CTA -->
-  <div id="cta-bar" data-anim>Scan Now</div>
+  <div id="cta-bar" data-anim>Request Scan</div>
 
   <!-- Footer -->
   <footer data-anim>
@@ -155,21 +148,18 @@
   </footer>
 
   <script>
-    // Preloader
+    // Preloader hide
     window.addEventListener('load', () => document.getElementById('preloader').style.display = 'none');
-    // Custom cursor
-    const cursor = document.getElementById('cursor');
-    document.addEventListener('mousemove', e => cursor.style.transform = `translate(${e.clientX - 8}px, ${e.clientY - 8}px)`);
     // Dark mode toggle
-    document.querySelector('.toggle-theme').addEventListener('click', () => {
+    document.querySelector('.toggle-theme').addEventListener('click', (e) => {
       const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? '' : 'dark';
       document.documentElement.setAttribute('data-theme', theme);
-      event.target.textContent = theme === 'dark' ? '☀️' : '🌙';
+      e.target.textContent = theme === 'dark' ? '☀️' : '🌙';
     });
     // Scroll animations
     const observer = new IntersectionObserver(entries => entries.forEach(e => e.isIntersecting && e.target.classList.add('in-view')), {threshold:0.2});
     document.querySelectorAll('[data-anim]').forEach(el => observer.observe(el));
-    // Existing background animation script unchanged
+    // Background network animation script remains unchanged
   </script>
 </body>
 </html>
