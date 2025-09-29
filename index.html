@@ -10,12 +10,24 @@
       background: #f7f9fa;
       margin: 0;
       padding: 0;
+      min-height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+    .background-canvas {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.28;
     }
     .logo {
       display: block;
       margin: 40px auto 20px auto;
       width: 320px;
       height: 80px;
+      z-index: 2;
+      position: relative;
     }
     .container {
       max-width: 700px;
@@ -23,6 +35,8 @@
       background: #fff;
       padding: 24px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+      position: relative;
+      z-index: 2;
     }
     h1 {
       color: #14497e;
@@ -56,7 +70,7 @@
   </style>
 </head>
 <body>
-  <!-- Logo at the top of the page -->
+  <canvas class="background-canvas" id="bg-canvas"></canvas>
   <img src="logo.svg" alt="ZeroScan Security Logo" class="logo">
   <div class="container">
     <h1>Welcome to ZeroScan Security</h1>
@@ -69,5 +83,73 @@
     </div>
     <!-- Add more site content here -->
   </div>
+  <script>
+    // Animated network background
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let w, h;
+    let nodes = [];
+    const NODES = 38;
+    function resize() {
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = w;
+      canvas.height = h;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function randomNode() {
+      return {
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.6,
+        vy: (Math.random() - 0.5) * 0.6,
+        r: Math.random() * 2.8 + 1.5,
+      };
+    }
+    function initNodes() {
+      nodes = [];
+      for (let i = 0; i < NODES; i++) nodes.push(randomNode());
+    }
+    initNodes();
+
+    function animate() {
+      ctx.clearRect(0, 0, w, h);
+      // Move nodes
+      for (const n of nodes) {
+        n.x += n.vx;
+        n.y += n.vy;
+        if (n.x < 0 || n.x > w) n.vx *= -1;
+        if (n.y < 0 || n.y > h) n.vy *= -1;
+      }
+      // Draw lines between close nodes
+      for (let i = 0; i < NODES; i++) {
+        for (let j = i + 1; j < NODES; j++) {
+          const ni = nodes[i], nj = nodes[j];
+          const dist = Math.hypot(ni.x - nj.x, ni.y - nj.y);
+          if (dist < 110) {
+            ctx.strokeStyle = "#14497e22";
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.moveTo(ni.x, ni.y);
+            ctx.lineTo(nj.x, nj.y);
+            ctx.stroke();
+          }
+        }
+      }
+      // Draw nodes
+      for (const n of nodes) {
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+        ctx.fillStyle = "#42a0ff";
+        ctx.globalAlpha = 0.38;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
 </body>
 </html>
