@@ -15,7 +15,7 @@ jobs:
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          apiToken: ${{ lnvkLTRcqF__yDZM7GDK0mV6HV4H3LDV7LqJkzE9 }}
+          accountId: ${{ aa7b007a2c2d9357a6dd44d6a6e044b2 }}
           projectName: zeroscansecurity
           directory: ./
