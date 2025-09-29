@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: Arial, Helvetica, sans-serif;
-      background: #f7f9fa;
+      background: radial-gradient(ellipse at top left, #e4f1fb 0%, #b7cbe6 100%);
       margin: 0;
       padding: 0;
       min-height: 100vh;
@@ -19,7 +19,7 @@
       top: 0; left: 0; width: 100vw; height: 100vh;
       z-index: 0;
       pointer-events: none;
-      opacity: 0.28;
+      opacity: 0.55;
     }
     .logo {
       display: block;
@@ -84,7 +84,7 @@
     <!-- Add more site content here -->
   </div>
   <script>
-    // Animated network background
+    // Brighter, glowing network background
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
     let w, h;
@@ -129,23 +129,32 @@
           const ni = nodes[i], nj = nodes[j];
           const dist = Math.hypot(ni.x - nj.x, ni.y - nj.y);
           if (dist < 110) {
-            ctx.strokeStyle = "#14497e22";
-            ctx.lineWidth = 1.2;
+            ctx.save();
+            ctx.shadowColor = "#42a0ff";
+            ctx.shadowBlur = 6;
+            ctx.strokeStyle = "#42a0ff";
+            ctx.globalAlpha = 0.32;
+            ctx.lineWidth = 1.7;
             ctx.beginPath();
             ctx.moveTo(ni.x, ni.y);
             ctx.lineTo(nj.x, nj.y);
             ctx.stroke();
+            ctx.restore();
           }
         }
       }
-      // Draw nodes
+      // Draw glowing nodes
       for (const n of nodes) {
+        ctx.save();
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
         ctx.fillStyle = "#42a0ff";
-        ctx.globalAlpha = 0.38;
+        ctx.shadowColor = "#42a0ff";
+        ctx.shadowBlur = 13;
+        ctx.globalAlpha = 0.92;
         ctx.fill();
         ctx.globalAlpha = 1;
+        ctx.restore();
       }
       requestAnimationFrame(animate);
     }
