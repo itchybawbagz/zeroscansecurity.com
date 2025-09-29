@@ -84,12 +84,14 @@
     <!-- Add more site content here -->
   </div>
   <script>
-    // Brighter, glowing network background
+    // Brighter, glowing network background with mouse interaction
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
     let w, h;
     let nodes = [];
     const NODES = 38;
+    let mouse = { x: null, y: null };
+
     function resize() {
       w = window.innerWidth;
       h = window.innerHeight;
@@ -98,6 +100,17 @@
     }
     window.addEventListener('resize', resize);
     resize();
+
+    // Listen for mouse movement
+    canvas.addEventListener('mousemove', function(e) {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+    });
+    canvas.addEventListener('mouseleave', function() {
+      mouse.x = null;
+      mouse.y = null;
+    });
 
     function randomNode() {
       return {
@@ -118,6 +131,21 @@
       ctx.clearRect(0, 0, w, h);
       // Move nodes
       for (const n of nodes) {
+        // Mouse interaction: push away nodes near mouse
+        if (mouse.x !== null && mouse.y !== null) {
+          const dx = n.x - mouse.x;
+          const dy = n.y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 110) { // If node is close to mouse
+            // Push away with a force inversely proportional to distance
+            const force = (110 - dist) * 0.07;
+            n.vx += (dx / dist) * force;
+            n.vy += (dy / dist) * force;
+          }
+        }
+        // Dampen velocity for smoothness
+        n.vx *= 0.97;
+        n.vy *= 0.97;
         n.x += n.vx;
         n.y += n.vy;
         if (n.x < 0 || n.x > w) n.vx *= -1;
