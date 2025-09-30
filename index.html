@@ -70,6 +70,22 @@
     /* Scroll Animations (fade-in) */
     [data-anim] { opacity:0; transform:translateY(20px); transition:opacity 0.6s ease, transform 0.6s ease; }
     [data-anim].in-view { opacity:1; transform:translateY(0); }
+
+    /* Minimal Animations: hero entrance, card reveal, CTA pulse */
+    @media (prefers-reduced-motion: reduce) {
+      .in-view, #cta-bar { animation: none !important; transition: none !important; }
+    }
+    .hero { opacity:0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+    .hero.in-view { opacity:1; transform: translateY(0); }
+    .feature-card { opacity:0; transform: translateY(20px) scale(.995); transition: opacity .6s ease, transform .6s ease, box-shadow .2s ease; }
+    .feature-card.in-view { opacity:1; transform: translateY(0) scale(1); }
+    /* CTA pulse */
+    #cta-bar { animation: cta-pulse 2.8s infinite ease-in-out; will-change: transform, box-shadow; }
+    @keyframes cta-pulse {
+      0% { transform: scale(1); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+      50% { transform: scale(1.03); box-shadow: 0 10px 26px rgba(0,0,0,0.14); }
+      100% { transform: scale(1); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+    }
   </style>
 </head>
 <body data-theme="">
@@ -156,10 +172,38 @@
       document.documentElement.setAttribute('data-theme', theme);
       e.target.textContent = theme === 'dark' ? '☀️' : '🌙';
     });
-    // Scroll animations
-    const observer = new IntersectionObserver(entries => entries.forEach(e => e.isIntersecting && e.target.classList.add('in-view')), {threshold:0.2});
-    document.querySelectorAll('[data-anim]').forEach(el => observer.observe(el));
-    // Background network animation script remains unchanged
+
+    // Minimal animation wiring: respect reduced-motion, hero entrance, card reveal (IntersectionObserver), CTA pulse visible state
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReduced) {
+      // Reveal everything immediately for reduced motion users
+      document.querySelectorAll('.hero, .feature-card, #cta-bar').forEach(el => el.classList.add('in-view'))
+    } else {
+      // Hero entrance slightly delayed after load for nicer effect
+      window.addEventListener('load', () => {
+        const hero = document.querySelector('.hero');
+        if (hero) setTimeout(() => hero.classList.add('in-view'), 80);
+      });
+
+      // IntersectionObserver for feature cards
+      if ('IntersectionObserver' in window) {
+        const obs = new IntersectionObserver((entries, o) => {
+          entries.forEach(e => {
+            if (e.isIntersecting) {
+              e.target.classList.add('in-view');
+              o.unobserve(e.target);
+            }
+          });
+        }, { threshold: 0.18 });
+        document.querySelectorAll('.feature-card').forEach(el => obs.observe(el));
+      } else {
+        document.querySelectorAll('.feature-card').forEach(el => el.classList.add('in-view'))
+      }
+
+      // Make CTA visible with a small delay so pulse is noticeable
+      setTimeout(() => document.getElementById('cta-bar').classList.add('in-view'), 400);
+    }
   </script>
 </body>
 </html>
